@@ -50,10 +50,12 @@ class System(object):
 	def run(self, scene):
 		"Filters the entities of `scene` and runs the system on each entity matching the desired components."
 		for entity in scene.entities:
-			for component in entity.components:
-				# if we match all desired components, run it
-				if all(component.isInstanceOf(c) for c in self.filtered_components):
-					self.fn(entity)
+			match = True # too late for this, add flags!
+			for filterComponent in self.filtered_components:
+				if not any(c.isInstanceOf(filterComponent) for c in entity.components):
+					match = False # one of the filters didn't match	
+			if match:
+				self.fn(entity)
 
 class Game(object):
 	def __init__(self):
