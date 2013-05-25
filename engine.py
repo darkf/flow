@@ -3,11 +3,12 @@ import pygame
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE
 
 class PygameGame(Game):
-	def __init__(self, screenWidth=640, screenHeight=480, fps=30, caption="Flow"):
+	def __init__(self, screenWidth=640, screenHeight=480, fps=30, backgroundColor=(255,255,255), caption="Flow"):
 		super(PygameGame, self).__init__()
 		self.screenWidth = screenWidth
 		self.screenHeight = screenHeight
 		self.fps = fps
+		self.backgroundColor = backgroundColor
 		self.caption = caption
 
 	def run(self):
@@ -23,6 +24,7 @@ class PygameGame(Game):
 
 		continueRunning = True
 		while continueRunning:
+			self.screen.fill(self.backgroundColor) # clear screen
 			# TODO: event handling
 			for event in pygame.event.get():
 				if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
