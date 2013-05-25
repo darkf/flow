@@ -24,6 +24,24 @@ class Entity(object):
 			return c
 		self.components = [newComponent(c) for c in components]
 
+	def __getattr__(self, attr):
+		if attr == "components":
+			return super(Entity, self).__getattribute__(attr)
+
+		for component in self.components:
+			if attr in component.attributes:
+				return getattr(component, attr)
+		raise AttributeError("Entity does not have the attribute '%s'" % attr)
+
+	def __setattr__(self, attr, value):
+		if attr == "components":
+			return super(Entity, self).__setattr__(attr, value)
+
+		for component in self.components:
+			if attr in component.attributes:
+				return setattr(component, attr, value)
+		raise AttributeError("Entity does not have the attribute '%s'" % attr)
+
 	def __repr__(self):
 		return "<Entity with: %s>" % ', '.join(repr(c) for c in self.components)
 
