@@ -58,6 +58,10 @@ class Entity(object):
 				return setattr(component, attr, value)
 		raise AttributeError("Entity does not have the attribute '%s'" % attr)
 
+	def has(self, component):
+		"Do we have a specific component?"
+		return any(c.isInstanceOf(component) for c in self.components)
+
 	def __repr__(self):
 		return "<Entity with: %s>" % ', '.join(repr(c) for c in self.components)
 
@@ -86,7 +90,7 @@ class System(object):
 		for entity in scene.entities:
 			match = True # too late for this, add flags!
 			for filterComponent in self.filtered_components:
-				if not any(c.isInstanceOf(filterComponent) for c in entity.components):
+				if not entity.has(filterComponent):
 					match = False # one of the filters didn't match	
 			if match:
 				self.fn(entity)
