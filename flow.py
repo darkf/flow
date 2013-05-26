@@ -112,6 +112,6 @@ class Game(object):
 		"Runs an update tick. Calls all systems."
 		self.currentScene.update()
 
-def system(components):
+def system(*components):
 	"The `system` decorator."
 	return lambda fn: System(components, fn)
