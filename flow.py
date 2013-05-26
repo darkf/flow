@@ -8,11 +8,25 @@ class Component(object):
 		for k,v in attributes.iteritems():
 			setattr(self, k, v)
 
+	def __call__(self, **attributes):
+		# instantiate (copy) a component with arguments
+		print "instantiate with:", attributes
+		new = copy(self)
+		new.parent = self
+		for k,v in attributes.iteritems():
+			if k not in self.attributes:
+				raise AttributeError("Attribute '%s' doesn't exist on %r" % (k, self))
+			new.attributes[k] = v
+			setattr(new, k, v)
+		return new
+
 	def __repr__(self):
 		return "<Component with: %s>" % ', '.join(self.attributes.iterkeys())
 
 	def isInstanceOf(self, component):
 		"Are we an instance of this component?"
+		if self.parent and self.parent.isInstanceOf(component):
+			return True
 		return self.parent == component
 
 class Entity(object):
@@ -25,6 +39,7 @@ class Entity(object):
 		self.components = [newComponent(c) for c in components]
 
 	def __getattr__(self, attr):
+		# XXX: ugly
 		if attr == "components":
 			return super(Entity, self).__getattribute__(attr)
 
@@ -34,6 +49,7 @@ class Entity(object):
 		raise AttributeError("Entity does not have the attribute '%s'" % attr)
 
 	def __setattr__(self, attr, value):
+		# XXX: ugly
 		if attr == "components":
 			return super(Entity, self).__setattr__(attr, value)
 
