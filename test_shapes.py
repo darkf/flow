@@ -1,8 +1,15 @@
+""" Shapes demo for the Flow engine.
+	Should display a red square approaching from the top-left, a green one from the top-right,
+	and a yellow circle approaching from the middle down, almost converging.
+
+	Copyright (c) 2013 darkf
+	Licensed under the terms of the WTFPL <http://www.wtfpl.net> """
+
 from flow import Entity, Component, system
 from engine import PygameGame
 import pygame
 
-game = None # global because of laziness
+game = None # we use a global because we're lazy programmers
 
 PositionComponent = Component(x=0, y=0)
 VelocityComponent = Component(vx=0, vy=0)
