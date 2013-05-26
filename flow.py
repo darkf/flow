@@ -65,13 +65,21 @@ class Entity(object):
 		return "<Entity with: %s>" % ', '.join(repr(c) for c in self.components)
 
 class Scene(object):
-	def __init__(self, name, entities):
+	def __init__(self, name, elements):
 		self.name = name
-		self.entities = entities
+		self.entities = []
 		self.systems = []
 
-	def addSystem(self, system):
-		self.systems.append(system)
+		for element in elements:
+			self.add(element)
+
+	def add(self, element):
+		if isinstance(element, Entity):
+			self.entities.append(element)
+		elif isinstance(element, System):
+			self.systems.append(element)
+		else:
+			raise ValueError("Not an entity or a system: %r" % element)
 		return self
 
 	def update(self):
