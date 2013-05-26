@@ -22,10 +22,13 @@ def squareRenderSystem(entity):
 def main():
 	global game
 	game = PygameGame()
-	squareEntity = Entity(SquareComponent, PositionComponent, VelocityComponent(vx=1, vy=1), ColorComponent(r=255, g=0, b=0))
 	game.scene('main', [
 		# entities
-		squareEntity
+		# red square from top-left
+		Entity(SquareComponent, PositionComponent, VelocityComponent(vx=1, vy=1), ColorComponent(r=255, g=0, b=0)),
+		# green square from top-right
+		Entity(SquareComponent, PositionComponent(x=game.screenWidth - SquareComponent.size, y=0),
+			   VelocityComponent(vx=-1, vy=1), ColorComponent(r=0, g=255, b=0))
 	]).addSystem(physicsSystem).addSystem(squareRenderSystem)
 	game.run()
 
