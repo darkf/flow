@@ -10,7 +10,6 @@ class Component(object):
 
 	def __call__(self, **attributes):
 		# instantiate (copy) a component with arguments
-		print "instantiate with:", attributes
 		new = copy(self)
 		new.parent = self
 		for k,v in attributes.iteritems():
