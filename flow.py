@@ -74,6 +74,10 @@ class Entity(object):
 		"Do we have a specific component?"
 		return any(c.isInstanceOf(component) for c in self.components)
 
+	def has_all(self, components):
+		"Do we have *all* of these components?"
+		return all(self.has(component) for component in components)
+
 	def __repr__(self):
 		return "<Entity with: %s>" % ', '.join(repr(c) for c in self.components)
 
@@ -128,6 +132,17 @@ class Game(object):
 			self.currentScene = scene
 		self.scenes[name] = scene
 		return scene
+
+	def query(self, components, exclude=None):
+		"Runs a query for entities with specific components. Able to exclude specific entities."
+		if exclude is None:
+			exclude = []
+		elif type(exclude) != list:
+			exclude = [exclude]
+
+		for entity in self.currentScene.entities:
+			if entity not in exclude and entity.has_all(components):
+				yield entity
 
 	def update(self):
 		"Runs an update tick. Calls all systems."
