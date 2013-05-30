@@ -86,6 +86,8 @@ class Scene(object):
 		self.name = name
 		self.entities = []
 		self.systems = []
+		self.eventHandlers = []
+		self.eventQueue = []
 
 		for element in elements:
 			self.add(element)
@@ -95,12 +97,30 @@ class Scene(object):
 			self.entities.append(element)
 		elif isinstance(element, System):
 			self.systems.append(element)
+		elif isinstance(element, EventHandler):
+			self.eventHandlers.append(element)
 		else:
 			raise ValueError("Not an entity or a system: %r" % element)
 		return self
 
+	def emit(self, eventName, *args):
+		for handler in self.eventHandlers:
+			if handler.eventName == eventName:
+				handler.run(*args)
+
+	def post(self, eventName, *args):
+		self.eventQueue.append((eventName, args))
+
+	def processEvents(self):
+		eventQueue = self.eventQueue[:]
+		self.eventQueue = []
+		for event in eventQueue:
+			self.emit(event[0], *event[1])
+
 	def update(self):
 		"Runs an update tick. Calls all systems."
+		self.processEvents()
+
 		for system in self.systems:
 			system.run(self)
 
@@ -119,6 +139,14 @@ class System(object):
 			if match:
 				self.fn(entity)
 
+class EventHandler(object):
+	def __init__(self, name, fn):
+		self.eventName = name
+		self.fn = fn
+
+	def run(self,*args):
+		self.fn(args)
+
 class Game(object):
 	def __init__(self):
 		self.scenes = {}
@@ -132,6 +160,16 @@ class Game(object):
 			self.currentScene = scene
 		self.scenes[name] = scene
 		return scene
+
+	# delegate these to the scene
+	def add(self, element):
+		return self.currentScene.add(element)
+
+	def emit(self, eventName, *args):
+		return self.currentScene.emit(eventName, *args)
+
+	def post(self, eventName, *args):
+		return self.currentScene.post(eventName, *args)
 
 	def query(self, components, exclude=None):
 		"Runs a query for entities with specific components. Able to exclude specific entities."
@@ -151,3 +189,7 @@ class Game(object):
 def system(*components):
 	"The `system` decorator."
 	return lambda fn: System(components, fn)
+
+def on(name):
+	"The `on` decorator."
+	return lambda fn: EventHandler(name, fn)

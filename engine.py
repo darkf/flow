@@ -13,7 +13,7 @@
 
 from flow import Game
 import pygame
-from pygame.locals import QUIT, KEYDOWN, K_ESCAPE
+from pygame.locals import QUIT, KEYDOWN, K_ESCAPE, MOUSEMOTION
 
 class PygameGame(Game):
 	def __init__(self, screenWidth=640, screenHeight=480, fps=30, backgroundColor=(255,255,255), caption="Flow"):
@@ -42,6 +42,9 @@ class PygameGame(Game):
 			for event in pygame.event.get():
 				if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
 					continueRunning = False
+					self.emit("shutdown")
+				elif event.type == MOUSEMOTION:
+					self.post("mouseMove", event.pos[0], event.pos[1])
 
 			self.update() # do game logic
 			pygame.display.update() # flip display
